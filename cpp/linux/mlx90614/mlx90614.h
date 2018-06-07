@@ -28,9 +28,13 @@
 
 class MLX90614 {
     public:
-        MLX90614();
+        MLX90614(const uint8_t bus);
         ~MLX90614();
-        double objectTemperature();
+        bool error();
+        double objectTemperature1();
+        double objectTemperature2();
+        double ambientTemperature();
+        double objectEmissivityCoefficient();
         bool setObjectTemperatureMinMax(const double TO_min, const double TO_max);
         bool setAmbientTemperatureMinMax(const double TA_min, const double TA_max);
         bool setObjectEmissivityCoefficient(const double epsilon); 
@@ -38,11 +42,16 @@ class MLX90614 {
         I2C i2c;
         bool err;
         bool write_word(const uint8_t reg, const uint16_t data);
+        double temperature(const uint8_t reg);
 };
 
-MLX90614::MLX90614() : i2c(1, MLX90614_I2CADDR){};
+MLX90614::MLX90614(const uint8_t bus) : i2c(bus, MLX90614_I2CADDR) {}
 
 MLX90614::~MLX90614() {}
+
+bool MLX90614::error() {
+    return err;
+}
 
 bool MLX90614::write_word(const uint8_t reg, const uint16_t data) {
     // erase data before write
@@ -85,12 +94,41 @@ bool MLX90614::setAmbientTemperatureMinMax(const double TA_min, const double TA_
     return true;
 }
 
-double MLX90614::objectTemperature() {
-    double temp = (double)i2c.read_word(MLX90614_TOBJ2);
+double MLX90614::temperature(const uint8_t reg) {
+    double temp = (double)i2c.read_word(reg);
     // convert to Kelvin
     temp *= 0.02;
     // convert to Celsius
     temp -= 273.15;
     return temp;
+}
+
+
+double MLX90614::objectTemperature1() {
+    return temperature(MLX90614_TOBJ1);
+}
+
+double MLX90614::objectTemperature2() {
+    return temperature(MLX90614_TOBJ2);
+}
+
+double MLX90614::ambientTemperature() {
+    return temperature(MLX90614_TA);
+}
+
+bool MLX90614::setObjectEmissivityCoefficient(const double epsilon) {
+    if (epsilon > 1.0 || epsilon < 0.1) {
+        return false;
+    }
+    uint16_t emissivity = (uint16_t)round(65535*epsilon);
+    if (!write_word(MLX90614_EMISS, emissivity)) {
+        return false;
+    }
+    return true;
+}
+
+double MLX90614::objectEmissivityCoefficient() {
+    double emissivity = (double)i2c.read_word(MLX90614_EMISS);
+    return emissivity/65535.0;
 }
 #endif

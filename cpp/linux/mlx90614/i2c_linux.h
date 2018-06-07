@@ -18,7 +18,7 @@ class I2C {
         bool write_word(const uint16_t reg, uint16_t data);
     private:
         int file;
-        bool err;
+        bool err = false;
         int open(const uint8_t bus);
 };
 
@@ -39,7 +39,6 @@ I2C::I2C(const uint8_t bus, const uint8_t addr) {
     if (err) {
         printf("Error setting packet error checking on i2c bus %d\n", bus);
     }
-    printf("%d\n", err);
 }
 
 I2C::~I2C() {
@@ -52,7 +51,7 @@ int I2C::open(const uint8_t bus) {
     // unistd open
     int file = ::open(filename, O_RDWR);
     if (file < 0) {
-       err = true; 
+        err = true; 
     }
     return file;
 }
