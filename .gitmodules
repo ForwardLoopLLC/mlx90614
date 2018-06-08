@@ -1,3 +1,0 @@
-[submodule "cpp/linux/i2c"]
-	path = cpp/linux/i2c
-	url = git@github.com:nickfloop/i2c.git
