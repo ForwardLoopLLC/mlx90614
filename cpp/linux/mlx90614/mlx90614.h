@@ -2,6 +2,7 @@
 #define MLX90614_H
 #include <math.h>
 #include "i2c_linux.h"
+#include <stdio.h>
 #define MLX90614_I2CADDR 0x5A
 
 // RAM registers
@@ -38,14 +39,26 @@ class MLX90614 {
         bool setObjectTemperatureMinMax(const double TO_min, const double TO_max);
         bool setAmbientTemperatureMinMax(const double TA_min, const double TA_max);
         bool setObjectEmissivityCoefficient(const double epsilon); 
+        bool enablePacketErrorChecking(); 
+        bool disablePacketErrorChecking(); 
     private:
         I2C i2c;
-        bool err;
+        bool err = false;
         bool write_word(const uint8_t reg, const uint16_t data);
         double temperature(const uint8_t reg);
 };
 
-MLX90614::MLX90614(const uint8_t bus) : i2c(bus, MLX90614_I2CADDR) {}
+MLX90614::MLX90614(const uint8_t bus) : i2c(bus, MLX90614_I2CADDR) {
+    if (i2c.error()) {
+        err = true;
+    }
+    if(!i2c.enablePacketErrorChecking()) {
+        err = true;
+    }
+    if(i2c.read_word(MLX90614_ADDR) != MLX90614_I2CADDR) {
+        err = true;
+    }
+}
 
 MLX90614::~MLX90614() {}
 
@@ -57,7 +70,7 @@ bool MLX90614::write_word(const uint8_t reg, const uint16_t data) {
     // erase data before write
     if(!i2c.write_word(reg, 0)) {
         return false;
-    }
+  }
     // writes need to be slow to communicate correctly
     i2c.wait(5000);
     if(!i2c.write_word(reg, data)) {

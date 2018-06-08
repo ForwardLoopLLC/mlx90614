@@ -11,11 +11,16 @@ class I2C {
     public:
         I2C(const uint8_t bus, const uint8_t addr);
         ~I2C();
+        bool error();
         void wait(const int duration);
         uint8_t read_byte(const uint8_t reg);
         bool write_byte(const uint8_t reg, uint8_t data);
         uint16_t read_word(const uint16_t reg);
-        bool write_word(const uint16_t reg, uint16_t data);
+        bool write_word(const uint8_t reg, uint16_t data);
+        uint8_t* read_block(const uint8_t reg, uint8_t length);
+        bool write_block(const uint8_t reg, uint8_t length,  uint8_t* data);
+        bool enablePacketErrorChecking(); 
+        bool disablePacketErrorChecking(); 
     private:
         int file;
         bool err = false;
@@ -24,26 +29,36 @@ class I2C {
 
 I2C::I2C(const uint8_t bus, const uint8_t addr) {
     file = open(bus);
-    if (err) {
-        printf("Error opening i2c bus %d\n", bus);
+    if (file < 0) {
+        err = true;
     }
     if (ioctl(file, I2C_SLAVE, addr) < 0) {
         err = true;
-    }
-    if (err) {
-        printf("Error setting slave address %d on i2c bus %d\n", addr, bus);
-    }
-    if (ioctl(file, I2C_PEC, 1) < 0) {
-        err = true;
-    }
-    if (err) {
-        printf("Error setting packet error checking on i2c bus %d\n", bus);
     }
 }
 
 I2C::~I2C() {
     close(file);
 }
+
+bool I2C::error() {
+    return err;
+}
+
+bool I2C::enablePacketErrorChecking() {
+    if (ioctl(file, I2C_PEC, 1) < 0) {
+        return false;
+    }
+    return true;
+}
+
+bool I2C::disablePacketErrorChecking() {
+    if (ioctl(file, I2C_PEC, 0) < 0) {
+        return false;
+    }
+    return true;
+}
+
 
 int I2C::open(const uint8_t bus) {
     char filename[20];
@@ -78,7 +93,7 @@ uint16_t I2C::read_word(const uint16_t reg) {
     return data_word;
 }
 
-bool I2C::write_word(const uint16_t reg, uint16_t data) {
+bool I2C::write_word(const uint8_t reg, uint16_t data) {
     if (i2c_smbus_write_word_data(file, (__u16)reg, (__u16)data) < 0) {
         return false;
     }
