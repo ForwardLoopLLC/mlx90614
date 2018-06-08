@@ -1,8 +1,7 @@
 #ifndef MLX90614_H
 #define MLX90614_H
 #include <math.h>
-#include "i2c_linux.h"
-#include <stdio.h>
+#include "i2c/i2c.h"
 #define MLX90614_I2CADDR 0x5A
 
 // RAM registers
