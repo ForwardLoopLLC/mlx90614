@@ -7,8 +7,11 @@
 // RAM registers
 #define MLX90614_RAWIR1 0x04
 #define MLX90614_RAWIR2 0x05
+//// Ambient temperature
 #define MLX90614_TA 0x06
+//// Object temperature (dual zone 1)
 #define MLX90614_TOBJ1 0x07
+//// Object temperature (dual zone 2)
 #define MLX90614_TOBJ2 0x08
 
 // EEPROM registers
@@ -18,10 +21,15 @@
 #define MLX90614_ID4 0x1F
 //// these registers are the same
 //// as the EEPROM in the datasheet + 20
+//// Object maximum temperature (<= 380)
 #define MLX90614_TOMAX 0x20
+//// Object minimum temperature
 #define MLX90614_TOMIN 0x21
+//// Power management control 
 #define MLX90614_PWMCTRL 0x22
+//// Ambient temperature range
 #define MLX90614_TARANGE 0x23
+//// Target emissivity coefficient
 #define MLX90614_EMISS 0x24
 #define MLX90614_CONFIG 0x25
 #define MLX90614_ADDR 0x2E
