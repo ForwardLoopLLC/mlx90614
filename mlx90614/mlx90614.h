@@ -38,6 +38,7 @@ class MLX90614 {
     public:
         MLX90614(const uint8_t bus);
         ~MLX90614();
+        void wait(const int delay);
         bool error();
         double objectTemperature1();
         double objectTemperature2();
@@ -62,12 +63,13 @@ MLX90614::MLX90614(const uint8_t bus) : i2c(bus, MLX90614_I2CADDR) {
     if(!i2c.enablePacketErrorChecking()) {
         err = true;
     }
-    if(i2c.read_word(MLX90614_ADDR) != MLX90614_I2CADDR) {
-        err = true;
-    }
 }
 
 MLX90614::~MLX90614() {}
+
+void MLX90614::wait(const int delay) {
+    i2c.wait(delay);
+}
 
 bool MLX90614::error() {
     return err;
@@ -79,7 +81,7 @@ bool MLX90614::write_word(const uint8_t reg, const uint16_t data) {
         return false;
   }
     // writes need to be slow to communicate correctly
-    i2c.wait(5000);
+    i2c.wait(5000); // 0.5 seconds
     if(!i2c.write_word(reg, data)) {
         return false;
     }
