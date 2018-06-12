@@ -19,7 +19,7 @@
 #define MLX90614_ID2 0x1D
 #define MLX90614_ID3 0x1E
 #define MLX90614_ID4 0x1F
-//// these registers are the same
+//// these write registers are the same
 //// as the EEPROM in the datasheet + 20
 //// Object maximum temperature (<= 380)
 #define MLX90614_TOMAX 0x20
@@ -43,10 +43,13 @@ class MLX90614 {
         double objectTemperature1();
         double objectTemperature2();
         double ambientTemperature();
+        uint16_t powerManagementControl();
+        bool setObjectEmissivityCoefficient(const double epsilon); 
         double objectEmissivityCoefficient();
         bool setObjectTemperatureMinMax(const double TO_min, const double TO_max);
+        double objectTemperatureMin();
+        double objectTemperatureMax();
         bool setAmbientTemperatureMinMax(const double TA_min, const double TA_max);
-        bool setObjectEmissivityCoefficient(const double epsilon); 
         bool enablePacketErrorChecking(); 
         bool disablePacketErrorChecking(); 
     private:
@@ -67,6 +70,10 @@ MLX90614::MLX90614(const uint8_t bus) : i2c(bus, MLX90614_I2CADDR) {
 
 MLX90614::~MLX90614() {}
 
+uint16_t MLX90614::powerManagementControl() {
+    return i2c.read_word(MLX90614_PWMCTRL);
+}
+
 void MLX90614::wait(const int delay) {
     i2c.wait(delay);
 }
@@ -81,10 +88,11 @@ bool MLX90614::write_word(const uint8_t reg, const uint16_t data) {
         return false;
   }
     // writes need to be slow to communicate correctly
-    i2c.wait(5000); // 0.5 seconds
+    i2c.wait(500000); // 0.5 seconds
     if(!i2c.write_word(reg, data)) {
         return false;
     }
+    i2c.wait(500000); // 0.5 seconds
     return true;
 }
 
@@ -152,5 +160,15 @@ bool MLX90614::setObjectEmissivityCoefficient(const double epsilon) {
 double MLX90614::objectEmissivityCoefficient() {
     double emissivity = (double)i2c.read_word(MLX90614_EMISS);
     return emissivity/65535.0;
+}
+
+double MLX90614::objectTemperatureMin() {
+    double objTempMin = (double)i2c.read_word(MLX90614_TOMIN);
+    return objTempMin/100.0 - 273.15;
+}
+
+double MLX90614::objectTemperatureMax() {
+    double objTempMax = (double)i2c.read_word(MLX90614_TOMAX);
+    return objTempMax/100.0 - 273.15;
 }
 #endif
