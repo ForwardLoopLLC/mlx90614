@@ -15,10 +15,11 @@
 #define MLX90614_TOBJ2 0x08
 
 // EEPROM registers
-#define MLX90614_ID1 0x1C
-#define MLX90614_ID2 0x1D
-#define MLX90614_ID3 0x1E
-#define MLX90614_ID4 0x1F
+#define MLX90614_SMBUS_ADDR 0x2E
+#define MLX90614_ID1 0x3C
+#define MLX90614_ID2 0x3D
+#define MLX90614_ID3 0x3E
+#define MLX90614_ID4 0x3F
 //// these write registers are the same
 //// as the EEPROM in the datasheet + 20
 //// Object maximum temperature (<= 380)
@@ -36,27 +37,90 @@
 
 class MLX90614 {
     public:
+        //! Constructor initializes I2C resources
+        /*!
+            \param bus the I2C bus to which the MLX90614 sensor is connected 
+        */
         MLX90614(const uint8_t bus);
+        //! Destructor cleans up I2C resources
         ~MLX90614();
+        //! Pause main thread execution
+        /*!
+            \param delay time in milliseconds to pause 
+        */
         void wait(const int delay);
+        //! Check if there was an error during object construction
+        /*!
+            \return True, if constructor failed. False, if succeeded.
+        */ 
         bool error();
+        //! Read object temperature from zone 1. For single zone MLX90614 models, this temperature is **more** accurate than `objectTemperature2()`.
+        /*!
+            \return Object temperature in units of °C
+        */
         double objectTemperature1();
+        //! Read object temperature from zone 2. For single zone MLX90614 models, this temperature is **less** accurate than `objectTemperature1()`.
+        /*!
+            \return Object temperature in units of °C
+        */
         double objectTemperature2();
+        //! Read ambient temperature of the sensor. 
+        /*!
+            \return Object temperature in units of °C
+        */
         double ambientTemperature();
-        uint16_t powerManagementControl();
+        //! Set object emissivity coefficient. The object emissivity coefficient depends on <a href="https://www.engineeringtoolbox.com/emissivity-coefficients-d_447.html">the material of the object.</a>
+        /*!
+            \param epsilon the object emissivity coefficient, a number between 0.1 and 1.0. If `epsilon` fails outside of this range, then the method does **not** try to set the emissivity coefficient.
+            \return False, if set failed or `epsilon` not between 0.1 and 1.0. True, if set succeeded.
+        */
         bool setObjectEmissivityCoefficient(const double epsilon); 
+        //! Read current object emissivity coefficient.
+        /*!
+            \return Object emissivity coefficient, a number between 0.1 and 1.0. 
+        */
         double objectEmissivityCoefficient();
+        //! Set object temperature minimum and maximum range. The lowest possible minimum temperature is -70 °C. The highest maximum temperature is 380 °C. The difference between the maximum and minimum temperature must be greater than 1 °C.
+        /*!
+            \param T0_min minimum temperature in units of °C, must be between -70 °C and 380 °C and at least 1 °C less than `T0_max`
+            \param T0_max maximum temperature in units of °C, must be between -70 °C and 380 °C and at least 1 °C more than `T0_min`
+            \return False, if set failed. True, if set succeeded.
+        */
         bool setObjectTemperatureMinMax(const double TO_min, const double TO_max);
+        //! Read current minimum temperature setting.
+        /*!
+            \return Object minimum temperature setting in units of °C, between -70 °C and 380 °C.
+        */
         double objectTemperatureMin();
+        //! Read current maximum temperature setting.
+        /*!
+            \return Object maximum temperature setting in units of °C, between -70 °C and 380 °C.
+        */
         double objectTemperatureMax();
+        //! Set ambient temperature minimum and maximum range. The lowest possible minimum temperature is -40 °C. The highest maximum temperature is 125 °C. The difference between the maximum and minimum temperature must be greater than 1 °C.
+        /*!
+            \param TA_min minimum temperature in units of °C, must be between -40 °C and 125 °C and at least 1 °C less than `TA_max`
+            \param TA_max maximum temperature in units of °C, must be between -40 °C and 125 °C and at least 1 °C more than `TA_min`
+            \return False, if set failed. True, if set succeeded.
+        */
         bool setAmbientTemperatureMinMax(const double TA_min, const double TA_max);
+        //! Enable SMBus packet error checking (PEC). Most models of MLX90614 need PEC in order to communicate over SMBus.
+        /*!
+            \return False, if enable failed. True, if enable succeeded.
+        */
         bool enablePacketErrorChecking(); 
+        //! Disable SMBus packet error checking (PEC). Most models of MLX90614 need PEC in order to communicate over SMBus.
+        /*!
+            \return False, if disable failed. True, if disable succeeded.
+        */
         bool disablePacketErrorChecking(); 
     private:
         I2C i2c;
         bool err = false;
         bool write_word(const uint8_t reg, const uint16_t data);
         double temperature(const uint8_t reg);
+        uint16_t powerManagementControl();
+        uint16_t whoAmI();
 };
 
 MLX90614::MLX90614(const uint8_t bus) : i2c(bus, MLX90614_I2CADDR) {
@@ -69,6 +133,10 @@ MLX90614::MLX90614(const uint8_t bus) : i2c(bus, MLX90614_I2CADDR) {
 }
 
 MLX90614::~MLX90614() {}
+
+uint16_t MLX90614::whoAmI() {
+    return i2c.read_word(MLX90614_SMBUS_ADDR) >> 8;
+} 
 
 uint16_t MLX90614::powerManagementControl() {
     return i2c.read_word(MLX90614_PWMCTRL);
