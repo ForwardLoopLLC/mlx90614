@@ -12,9 +12,9 @@ build:
             name: build documentation
             code: |
                 ./doc.sh && \
-                mkdir -p sync/drivers/mlx90614/ && \
-                cp -r docs/build/html/ sync/drivers/mlx90614/$WERCKER_GIT_BRANCH/ && \
-                ls sync/drivers/mlx90614/$WERCKER_GIT_BRANCH/
+                mkdir -p sync/drivers/$WERCKER_GIT_REPOSITORY/ && \
+                cp -r docs/build/html/ sync/drivers/$WERCKER_GIT_REPOSITORY/$WERCKER_GIT_BRANCH/ && \
+                ls sync/drivers/$WERCKER_GIT_REPOSITORY/$WERCKER_GIT_BRANCH/
         - script:
             name: push documentation
             code: |
