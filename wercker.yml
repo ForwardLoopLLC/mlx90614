@@ -13,8 +13,8 @@ build:
             code: |
                 ./doc.sh && \
                 mkdir -p sync/drivers/mlx90614/ && \
-                cp -r docs/build/html/ sync/drivers/mlx90614/master/ && \
-                ls sync/drivers/mlx90614/master/
+                cp -r docs/build/html/ sync/drivers/mlx90614/$WERCKER_GIT_BRANCH/ && \
+                ls sync/drivers/mlx90614/$WERCKER_GIT_BRANCH/
         - script:
             name: push documentation
             code: |
