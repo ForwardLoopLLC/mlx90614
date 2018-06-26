@@ -1,0 +1,14 @@
+box:
+    id: python:3.6
+
+dev:
+    steps:
+        - install-packages:
+            packages: doxygen
+        - pip-install:
+            requirements_file: ""
+            packages_list: "sphinx breathe sphinx-tabs"
+        - script:
+            name: build documentation
+            code: |
+                ./doc.sh && mkdir -p drivers/mlx90614/ && cp -r docs/build/html/ drivers/mlx90614/master/ && ls drivers/mlx90614/master/

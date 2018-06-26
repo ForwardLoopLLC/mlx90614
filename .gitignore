@@ -4,3 +4,6 @@
 **/.*.swp
 docs/build/
 docs/xml/
+.wercker/
+drivers/
+.1*

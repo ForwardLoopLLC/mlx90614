@@ -18,15 +18,15 @@ int main() {
         printf("Error: Set object emissivity coefficient failed\n");
         return 1;
     }
-    printf("Object emissivity coefficient: %d\n", mlx90614.objectEmissivityCoefficient());
+    printf("Object emissivity coefficient: %f\n", mlx90614.objectEmissivityCoefficient());
 
     // Set object temperature range
     if(!mlx90614.setObjectTemperatureMinMax(0.0, 380.0)) {
         printf("Error: Set object minimum and maximum temperature failed\n");
         return 1;
     }
-    printf("Object minimum temperature: %d\n", mlx90614.objectTemperatureMin());
-    printf("Object maximum temperature: %d\n", mlx90614.objectTemperatureMax());
+    printf("Object minimum temperature: %f\n", mlx90614.objectTemperatureMin());
+    printf("Object maximum temperature: %f\n", mlx90614.objectTemperatureMax());
 
     // Set ambient temperature range
     if(!mlx90614.setAmbientTemperatureMinMax(0.0, 50.0)) {
@@ -37,8 +37,12 @@ int main() {
     // Read temperature values in °C
     double ambTemp = mlx90614.ambientTemperature();
     printf("Ambient Temperature: %f\n", ambTemp);
+
+    // For single zone sensors, only this value is accurate
     double objTemp1 = mlx90614.objectTemperature1();
     printf("Object Temperature 1: %f\n", objTemp1);
+
+    // For single zone sensors, this value is not accurate
     double objTemp2 = mlx90614.objectTemperature2();
     printf("Object Temperature 2: %f\n", objTemp2);
 

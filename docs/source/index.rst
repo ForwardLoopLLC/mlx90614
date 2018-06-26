@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Drivers for MLX90614 IR Sensor
-==============================
+Drivers for MLX90614 Long-range Infrared Sensor
+===============================================
 
 These drivers support the `MLX90614 Single and Dual Zone Infrared Thermometer <http://cpre.kmutnb.ac.th/esl/learning/mlx90614_infrared_thermometer/MLX90614_Datasheet.pdf>`_.
 
@@ -19,7 +19,7 @@ This is a long-range infrared camera that can measure temperatures between -70 Â
 Prerequisites
 -------------
 
-- Linux device with an MLX90614 connected via I2C, such as any version of `Forward Loop Zero <https://forward-loop.com/developer.html>`_ with the optional MLX90614.
+- Linux device with an MLX90614 connected via I2C, such as any version of `Forward Loop Zero <https://forward-loop.com/developer.html>`_ with the optional long-range infrared.
 - (Optional) Docker on the Linux device. We recommend you check out `floop <https://github.com/ForwardLoopLLC/floopcli>`_, our simple, open-source tool for working with embedded Docker on multiple devices at the same time.
 
 Install
@@ -77,7 +77,7 @@ Install
 
         You can install the C++ header files for use in your own applications.  
 
-        You need to install the mlx90614 and I2C headers, then include them during compilation of your application. Inside of your application folder, you can install both headers at the same time:
+        You need to install the MLX90614 and I2C headers, then include them during compilation of your application. Inside of your application folder, you can install both headers at the same time:
 
         .. code-block:: bash
 
@@ -97,7 +97,7 @@ Install
 Example
 -------
 
-The example shows the functionality of the drivers.
+The example shows the major functionality of the drivers.
 
 .. literalinclude:: ../../example/main.cpp
     :language: c++
