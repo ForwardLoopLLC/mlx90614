@@ -115,3 +115,6 @@ API Documentation
 
 `Source Code <https://github.com/ForwardLoopLLc/mlx90614>`_
     Our MIT license lets you use, change, and sell the drivers for free
+ 
+`Forward Loop Docs <https://docs.forward-loop.com>`_
+    Check out other drivers, develop tools, and code
