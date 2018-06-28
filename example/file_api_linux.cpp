@@ -5,7 +5,7 @@
 double time() {
     struct timeval tp;
     gettimeofday(&tp, NULL);
-    return (double) tp.tv_sec*1000 + tp.tv_usec/1000;
+    return (double) tp.tv_sec+ tp.tv_usec/1000000.0;
 }
 
 int main() {
