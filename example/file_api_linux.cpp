@@ -10,7 +10,7 @@ double time() {
 }
 
 int main() {
-    uint8_t bus = getenv("MLX90614_BUS") - '0';
+    uint8_t bus = (uint8_t)aoti(getenv("MLX90614_BUS"));
     printf("Starting MLX90614 on bus: %d\n", bus);
     MLX90614 mlx90614(bus);
     if (mlx90614.error()) {
@@ -36,7 +36,7 @@ int main() {
             fflush(fid);
             fclose(fid);
         }
-        mlx90614.wait(getenv("MLX90614_DELAY") - '0');
+        mlx90614.wait(atoi(getenv("MLX90614_DELAY")));
     }
     return 0;
 }
