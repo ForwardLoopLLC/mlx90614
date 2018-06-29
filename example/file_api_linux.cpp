@@ -15,7 +15,6 @@ int main() {
         return 1;
     }
     printf("MLX90614 initialized\n");
-    printf("PWM? %d\n", mlx90614.powerManagementControl());
     printf("Set object min max? %d\n", mlx90614.setObjectTemperatureMinMax(0.0, 150.0));
     printf("Object min? %f\n", mlx90614.objectTemperatureMin());
     printf("Object max? %f\n", mlx90614.objectTemperatureMax());
