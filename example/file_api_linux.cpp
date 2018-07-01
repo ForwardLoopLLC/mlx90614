@@ -10,7 +10,7 @@ double time() {
 }
 
 int main() {
-    uint8_t bus = (uint8_t)aoti(getenv("MLX90614_BUS"));
+    uint8_t bus = (uint8_t)atoi(getenv("MLX90614_BUS"));
     printf("Starting MLX90614 on bus: %d\n", bus);
     MLX90614 mlx90614(bus);
     if (mlx90614.error()) {
